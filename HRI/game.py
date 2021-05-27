@@ -10,24 +10,27 @@
 # Last Modified: 25/08/20
 
 from world import World
-from link  import Link
+from MDP  import MDP
 from dungeon import Dungeon
+from q_learning_agent import QAgent
+from IRLPLUS import IRL
+
 import utils
 import time
 
 # How we set the game up. Create a world, then connect player and
 # display to it.
 gameWorld = World()
-player = Link(gameWorld)
+player = IRL(gameWorld)
 display = Dungeon(gameWorld)
 
 #Set to true for random movements from Human
-movement = False
+random_move = False
 
 # Now run...
 while not(gameWorld.isEnded()):
-    gameWorld.updateRobot(player.makeMove())
-    gameWorld.updateHuman(movement)
+    gameWorld.updateHuman(random_move)
+    gameWorld.updateRobot(player.makeMove(end = False))
     #utils.printGameState(gameWorld)
     display.update()
     time.sleep(0.1)

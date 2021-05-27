@@ -44,13 +44,7 @@ directionProbability = 0.8
 #
 # If useImage is True, then we use images for Link, Wumpus and
 # Gold. If it is False, then we use simple colored objects.
+
 useImage = True
 
-
-#Algorithms, change these 
-MDP = True
-Q_Learning = False
-SPARC = False
-
-if Q_Learning == True:
-    dynamic = False
+test = False # dont touch this.

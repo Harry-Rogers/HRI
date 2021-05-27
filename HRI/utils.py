@@ -68,4 +68,14 @@ def printGameState(world):
     print("Pits:")
     for i in range(len(world.getPitsLocation())):
         world.getPitsLocation()[i].print()
+    
 
+def retRobotState(world):
+    return world.getRobotLocation()
+
+def retStrawbState(world):
+    return world.getStrawberryLocation()
+
+def retHumanState(world):
+    return world.getHumanLocation()
+    

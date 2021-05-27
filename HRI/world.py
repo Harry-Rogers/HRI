@@ -23,8 +23,8 @@ class World():
         # these are one less than the number of rows and columns.
         self.maxX = config.worldLength - 1
         self.maxY = config.worldBreadth - 1
-        print(self.maxX)
-        print(self.maxY)
+        #print(self.maxX)
+        #print(self.maxY)
 
         # Human
         self.hLoc = []
@@ -43,7 +43,20 @@ class World():
         self.pLoc = []
         for i in range(config.numberOfPits):
             self.pLoc.append(utils.pickRandomPose(self.maxX, self.maxY))
-
+        
+        #If bot and human spawn same place redo human
+        if self.rLoc == self.hLoc:
+            for i in range(config.numberOfHuman):
+                self.hLoc.append(utils.pickRandomPose(self.maxX, self.maxY))
+        
+        if self.rLoc == self.sLoc:
+            for i in range(config.numberOfStrawb):
+                self.sLoc.append(utils.pickRandomPose(self.maxX, self.maxY))
+        
+        if self.rLoc == self.pLoc:
+            for i in range(config.numberOfPits):
+                self.pLoc.append(utils.pickRandomPose(self.maxX, self.maxY))
+        
         # Game state
         self.status = State.PLAY
 
@@ -197,9 +210,9 @@ class World():
     #
     # Need a decrementDifference function to tidy things up
     #
-    def updateHuman(self, movement):
+    def updateHuman(self, random_move):
         if config.dynamic:
-            if movement == True:
+            if random_move == True:
                 print("Moving randomly")
                 #Moving in positive direction
                 direction = random.randint(1, 4)
@@ -207,6 +220,7 @@ class World():
                     if direction == 1:
                         #1 is North (Down the dungeon)
                         self.hLoc[i].y = self.hLoc[i].y + 1
+                        print("Going North")
                         if self.hLoc[i].y > self.maxY:
                             #Undo the addition
                             self.hLoc[i].y = self.hLoc[i].y -1
@@ -215,6 +229,7 @@ class World():
                     if direction == 2:
                         #2 is South (Up the dungeon)
                         self.hLoc[i].y = self.hLoc[i].y - 1
+                        print("Going South")
                         if self.hLoc[i].y < 0:
                             #Undo cant leave
                             self.hLoc[i].y = self.hLoc[i].y + 1
@@ -222,16 +237,20 @@ class World():
 
                     if direction == 3:
                         #3 is East (Right of dungeon)
+                        print("Going East")
                         self.hLoc[i].x = self.hLoc[i].x + 1
                         if self.hLoc[i].x > self.maxX:
                             self.hLoc[i].x = self.hLoc[i].x - 1
                             print("Can't leave")
                     if direction == 4:
+                        print("Going West")
                         #4 is west (Left of dungeon)
                         self.hLoc[i].x = self.hLoc[i].x - 1
                         if self.hLoc[i].x < 0:
                             self.hLoc[i].x = self.hLoc[i].x + 1
                             print("Can't leave")
+                
+                
             else:  
                 # Head towards Robot
                 target = self.rLoc
@@ -239,11 +258,15 @@ class World():
                     # If same x-coordinate, move in the y direction
                     if self.hLoc[i].x == target.x:
                         self.hLoc[i].y = self.reduceDifference(self.hLoc[i].y, target.y)      
+                        #
+                        print("Human going y coord")
                         print(self.hLoc[i].y)
 
                     # If same y-coordinate, move in the x direction
                     elif self.hLoc[i].y == target.y:
                         self.hLoc[i].x = self.reduceDifference(self.hLoc[i].x, target.x)      
+                        #
+                        print("Human going y coord")
                         print(self.hLoc[i].x)
                     # If x and y both differ, approximate a diagonal
                     # approach by randomising between moving in the x and
@@ -252,9 +275,13 @@ class World():
                         dice = random.random()
                         if dice > 0.5:
                             self.hLoc[i].y = self.reduceDifference(self.hLoc[i].y, target.y)     
+                            #
+                            print("Human going y coord")
                             print(self.hLoc[i].y)
                         else:
                             self.hLoc[i].x = self.reduceDifference(self.hLoc[i].x, target.x)       
+                            #
+                            print("Human going x coord")
                             print(self.hLoc[i].x)
 
     # Move value towards target.
