@@ -6,7 +6,7 @@
 #
 # Written by: Simon Parsons
 # Edited by: Harry Rogers
-# Last Modified: 22/05/21
+# Last Modified: 30/05/21
 
 import random
 import config
@@ -60,7 +60,7 @@ class World():
         # Game state
         self.status = State.PLAY
 
-        # Did Link just successfully loot some gold?
+        # Get to goal?
         self.looted = False
         
         
@@ -225,7 +225,6 @@ class World():
                             #Undo the addition
                             self.hLoc[i].y = self.hLoc[i].y -1
                             print("Can't leave")
-                        print("Going somewhere")
                     if direction == 2:
                         #2 is South (Up the dungeon)
                         self.hLoc[i].y = self.hLoc[i].y - 1

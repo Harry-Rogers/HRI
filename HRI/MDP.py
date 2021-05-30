@@ -18,7 +18,7 @@ from utils import Directions
 class MDP():
 
     def __init__(self, dungeon):
-        # Make a copy of the world an attribute, so that Link can
+        # Make a copy of the world an attribute, so that Robot can
         # query the state of the world
         self.gameWorld = dungeon
 
@@ -180,20 +180,18 @@ class MDP():
         if y ==(config.worldLength -1):
             going_north = 0
 
-        #Direciton probabilityS
-        side_direct_prob = (1-config.directionProbability)/2
 
         #North = probab of going north * value at north + probab of going west * value at west + probab of going east * value at east
-        North = ((u_map[y + going_north][x] * config.directionProbability) + (u_map[y][x + going_west] * side_direct_prob) + (u_map[y][x + going_east] * side_direct_prob))
+        North = ((u_map[y + going_north][x]) + (u_map[y][x + going_west] ) + (u_map[y][x + going_east] ))
 
         #South = probab of going south * value at south + probab of going west * value at west + probab of going east * value at east
-        South = ((u_map[y + going_south][x] * config.directionProbability) + (u_map[y][x + going_west] * side_direct_prob) + (u_map[y][x + going_east] * side_direct_prob))
+        South = ((u_map[y + going_south][x] ) + (u_map[y][x + going_west]  ) + (u_map[y][x + going_east]  ))
 
         #East = = probab of going east * value at east + probab of going north * value at north + probab of going south * value at south
-        East = ((u_map[y][x + going_east] * config.directionProbability) + (u_map[y + going_north][x] * side_direct_prob) + (u_map[y + going_south][x] * side_direct_prob))
+        East = ((u_map[y][x + going_east]  ) + (u_map[y + going_north][x]  ) + (u_map[y + going_south][x]  ))
 
         #West = = probab of going west * value at west + probab of going north * value at north + probab of going south * value at south
-        West = ((u_map[y][x + going_west] * config.directionProbability) + (u_map[y + going_north][x] * side_direct_prob) + (u_map[y + going_south][x] * side_direct_prob))
+        West = ((u_map[y][x + going_west]  ) + (u_map[y + going_north][x]  ) + (u_map[y + going_south][x]  ))
         
         #Actions list
         actions = [North,South,East,West]

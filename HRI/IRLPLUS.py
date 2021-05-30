@@ -14,11 +14,7 @@ Created on Tue May 25 16:53:00 2021
 #
 # Written by: Simon Parsons
 # Last Modified: 25/08/20
-import world
-import random
-import utils
 import config
-import time
 import numpy as np
 from utils import Directions
 
@@ -40,88 +36,73 @@ class IRL():
         self.previous_moves = []
         
 
-    def makeMove(self, end):
-        rounds = 10
-        i = 0
+    def makeMove(self):
         self.map = self.util_map()
-        while i < rounds:
-            if end == True:
-                print("here12")
-                self.endseq()
-                break
-                #reward = 1
-                #for s in reversed(self.states):
-                #    reward = self.state_values[s] + self.lr * (reward - self.state_values[s])
-                #    self.state_values[s] = round(reward, 3)
-                #print(self.state_values)
-            else:
-                robot_loc = (self.gameWorld.getRobotLocation().x, self.gameWorld.getRobotLocation().y)
+     
+        robot_loc = (self.gameWorld.getRobotLocation().x, self.gameWorld.getRobotLocation().y)
                 #Arrays for locations
-                strawb_loc = []
-                human_loc = []
-                pit_loc = []
+        strawb_loc = []
+        human_loc = []
+        pit_loc = []
                 
-                robot_loc = (self.gameWorld.getRobotLocation().x, self.gameWorld.getRobotLocation().y)
+                              
+        #Get Strawberry locations
+        for i in range(len(self.gameWorld.getStrawberryLocation())):
+            location = (self.gameWorld.getStrawberryLocation()[i].x, self.gameWorld.getStrawberryLocation()[i].y)
+            strawb_loc.append(location)
+                    
                 
-                #Get Strawberry locations
-                for i in range(len(self.gameWorld.getStrawberryLocation())):
-                    location = (self.gameWorld.getStrawberryLocation()[i].x, self.gameWorld.getStrawberryLocation()[i].y)
-                    strawb_loc.append(location)
-                    #print(gold_loc)
+        #Get human locations
+        for i in range(len(self.gameWorld.getHumanLocation())):
+            location = (self.gameWorld.getHumanLocation()[i].x, self.gameWorld.getHumanLocation()[i].y)
+            human_loc.append(location)
                 
-                #Get human locations
-                for i in range(len(self.gameWorld.getHumanLocation())):
-                    location = (self.gameWorld.getHumanLocation()[i].x, self.gameWorld.getHumanLocation()[i].y)
-                    human_loc.append(location)
+        #Get pit locaitons
+        for i in range(len(self.gameWorld.getPitsLocation())):
+            location = (self.gameWorld.getPitsLocation()[i].x, self.gameWorld.getPitsLocation()[i].y)
+            pit_loc.append(location)
+        #Get action
+        action = self.max_action_util(self.map, robot_loc[1], robot_loc[0])
+        self.previous_moves.append(action)
+        print("Action chosen: ", action)
+        feedback = input("Good or bad? (g/b): ")
+        u_feedback = 0
+        if feedback == "g":
+            action = action
+        elif feedback == "b":
+            newAction = 0
+            newAction = self.max_action_util(self.map , robot_loc[0], robot_loc[1], True)
+            action = newAction
+        else:
+            action = action
                 
-                #Get pit locaitons
-                for i in range(len(self.gameWorld.getPitsLocation())):
-                    location = (self.gameWorld.getPitsLocation()[i].x, self.gameWorld.getPitsLocation()[i].y)
-                    pit_loc.append(location)
-                #Do while loop here for getting actions till at goal
-                action = self.max_action_util(self.map, robot_loc[1], robot_loc[0])
-                self.previous_moves.append(action)
-                print("Action chosen: ", action)
-                feedback = input("Good or bad? (g/b): ")
-                u_feedback = 0
-                if feedback == "g":
-                    action = action
-                elif feedback == "b":
-                    newAction = 0
-                    newAction = self.max_action_util(self.map , robot_loc[0], robot_loc[1], True)
-                    action = newAction
-                else:
-                    action = action
-                
-                self.states.append(self.possible(self.map , robot_loc[0], robot_loc[1], action))
-                
+        self.states.append(self.possible(self.map , robot_loc[0], robot_loc[1], action))
                 
                 
-                current_state = robot_loc
-                print("Action was: ", action)
-                feedback = input("\n Was the action good or bad? (g/b): ")
-                if feedback == "g":
-                    u_feedback = 1.0
-                elif feedback == "b":
-                    u_feedback = -1.0
-                else:
-                    u_feedback = 0.1
                 
-                reward = self.map[current_state] + self.exp_rate *(u_feedback - self.map[current_state])
-                self.map[current_state] = round(reward, 3)
-                print(self.map)
-                print(self.states[len(self.states)-1])
-                print(action)
-                if self.states[len(self.states)-1] == strawb_loc:
-                    end = True
-                if self.states[len(self.states)-1] == pit_loc:
-                    end = True
-                if self.states[len(self.states)-1] == human_loc:
-                    end = True
-                self.previous_moves.append(action)
-                print(self.previous_moves)
+        current_state = robot_loc
+        print("Action was: ", action)
+        feedback = input("\n Was the action good or bad? (g/b): ")
+        if feedback == "g":
+            u_feedback = 1.0
+        elif feedback == "b":
+            u_feedback = -1.0
+        else:
+            u_feedback = 0.1
                 
-                return action
+        reward = self.map[current_state] + self.exp_rate *(u_feedback - self.map[current_state])
+        self.map[current_state] = round(reward, 3)
+        if self.states[len(self.states)-1] == strawb_loc:
+            end = True
+        if self.states[len(self.states)-1] == pit_loc:
+            end = True
+        if self.states[len(self.states)-1] == human_loc:
+            end = True
+            
+        self.previous_moves.append(action)
+        print(self.previous_moves)
+                
+        return action
     
     
     def util_map(self):
@@ -154,7 +135,7 @@ class IRL():
         
         #Create empty map of 0's same size as map
         u_map = np.zeros((config.worldBreadth, config.worldLength))
-        print(strawb_loc)
+        #print(strawb_loc)
         
         #Go over all coordinates
         for x in range(config.worldBreadth):
@@ -201,8 +182,8 @@ class IRL():
         going_north = 1
         going_south = -1
         
-        print(x)
-        print(y)
+        #print(x)
+        #print(y)
         
         #If on edges cant move certain directions 
         if x==0:
@@ -213,6 +194,24 @@ class IRL():
             going_south = 0
         if y ==(config.worldLength -1):
             going_north = 0
+        
+        #This is the worst way to do it but I can't think atm
+        if a == Directions.WEST:
+            
+            if going_west == 0:
+                a = self.check(a)
+        if a == Directions.EAST:
+            
+            if going_east == 0:
+                a = self.check(a)
+        
+        if a == Directions.SOUTH:
+            if going_south == 0:
+                a = self.check(a)
+        
+        if a == Directions.NORTH:
+            if going_north == 0:
+                a = self.check(a)
         
         #Gives value not location
         if a == Directions.NORTH:
@@ -227,22 +226,27 @@ class IRL():
         return nxt
     
     def repeater(self, action):
+        holder = self.moves
         #Make sure new move can't be one we just said no to
         if action == self.previous_moves[len(self.previous_moves)-1]:
-            #create holder array
-            holder = self.moves
-            #find index of action in array
-            index = holder.index(action)
-            #delete action
-            del holder[index]
-            #get new action from list
-            action = np.random.choice(holder)
+            new = np.random.choice(self.moves)
+            if action == new:
+                new = np.random.choice(self.moves)
+            action = new
             return action
-        N = 3
-        if action == self.previous_moves[-N:]:
-            print("here boys")
-            print(action)
+            
         return action
     
-        
+
+    def check(self, action):
+        #create holder array
+        holder = self.moves
+        #find index of action in array
+        index = holder.index(action)
+        #delete action
+        del holder[index]
+        #get new action from list
+        action = np.random.choice(holder)
+        del holder
+        return action
         

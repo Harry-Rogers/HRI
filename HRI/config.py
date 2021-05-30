@@ -7,8 +7,8 @@
 # Last Modified: 25/08/20
 
 # Dimensions in terms of the numbers of rows and columns
-worldLength = 10
-worldBreadth = 10
+worldLength = 5
+worldBreadth = 5
 
 # Features
 numberOfHuman = 1
@@ -46,5 +46,3 @@ directionProbability = 0.8
 # Gold. If it is False, then we use simple colored objects.
 
 useImage = True
-
-test = False # dont touch this.
