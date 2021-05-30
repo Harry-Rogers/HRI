@@ -5,3 +5,15 @@ python3 game.py
 In config can change large parts of code
 
 In game.py set random_move to True for random movement
+
+In game.py change the algorithm:
+
+player =  QAgent(gameWorld)
+
+or
+
+player = IRL(gameWorld)
+
+or
+
+player = MDP(gameWorld)
