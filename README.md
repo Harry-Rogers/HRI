@@ -6,8 +6,12 @@ Implemented algorithms:
 
 MDP
 
+IRLPlus
+
+Q-learning
+
 Movement styles:
 
-Searching for Robot (base)
+Searching for Robot 
 
 Random
